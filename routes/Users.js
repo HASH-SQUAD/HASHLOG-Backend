@@ -4,8 +4,7 @@ const { Users } = require('../models');
 const { Post } = require('../models');
 const bcrypt = require('bcrypt');
 const { sign } = require('jsonwebtoken');
-
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJUZXN0MTIzNDUiLCJwYXNzd29yZCI6IjEyMzQ1Iiwibmlja25hbWUiOiJUZXN0MTIzNDUiLCJpYXQiOjE3MDM2NDM1MzR9.ddd2eCNFWRP6IO1Tjk2zJYiArvRBF0PDFnbFZ7BaH70
+const { validateToken } = require('../middlewares/AuthMiddleware');
 
 //Register
 router.post('/', async (req, res) => {
@@ -23,7 +22,7 @@ router.post('/', async (req, res) => {
 		const user = await Users.findOne({ where: { userid: userid } });
 
 		if (!user) {
-			bcrypt.hash(password, 10).then((hash) => {
+			bcrypt.hash(password, 10).then(hash => {
 				Users.create({
 					userid: userid,
 					password: hash,
@@ -48,7 +47,7 @@ router.post('/login', async (req, res) => {
 		return res.json({ error: '존재하지 않는 아이디입니다.' });
 	}
 
-	bcrypt.compare(password, user.password).then((match) => {
+	bcrypt.compare(password, user.password).then(match => {
 		if (!match)
 			return res.json({
 				error: '비밀번호가 일치하지 않습니다.',
@@ -68,6 +67,10 @@ router.post('/login', async (req, res) => {
 	});
 });
 
+router.get('/state', validateToken, async (req, res) => {
+	res.json({ state: true });
+});
+
 //Update
 router.put('/:id', async (req, res) => {
 	const { userid, password, nickname } = req.body;
@@ -77,7 +80,7 @@ router.put('/:id', async (req, res) => {
 	} else {
 		if (userid === req.params.id) {
 			if (password) {
-				bcrypt.hash(password, 10).then((hash) => {
+				bcrypt.hash(password, 10).then(hash => {
 					Users.update(
 						{
 							userid: userid,
@@ -109,7 +112,7 @@ router.delete('/:id', async (req, res) => {
 	const user = await Users.findOne({ where: { userid: userid } });
 
 	if (userid === req.params.id) {
-		bcrypt.compare(password, user.password).then((match) => {
+		bcrypt.compare(password, user.password).then(match => {
 			if (!match) {
 				return res.json({
 					error: '비밀번호가 일치하지 않습니다.',

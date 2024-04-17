@@ -8,7 +8,12 @@ const { validateToken } = require('../middlewares/AuthMiddleware');
 router.post('/', validateToken, async (req, res) => {
 	const title = req.body;
 	title.desc = req.body.desc;
-	title.mainImg = req.body.mainImg;
+	if (req.body.mainImg) {
+		title.mainImg = req.body.mainImg;
+	} else {
+		title.mainImg = 'http://localhost:3000/uploads/NoImg.jpg';
+	}
+
 	title.subheading = req.body.subheading;
 
 	title.nickname = req.user.nickname;
