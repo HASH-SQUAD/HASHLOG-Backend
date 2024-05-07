@@ -1,13 +1,29 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
+const authUtil = require('../response/authUtil');
 const { Users } = require('../models');
 const { Post } = require('../models');
-const bcrypt = require('bcrypt');
 const { sign } = require('jsonwebtoken');
 const { validateToken } = require('../middlewares/AuthMiddleware');
+const {
+	generateAccessToken,
+	generateRefreshToken,
+} = require('../tokens/jwt.js');
+const { where } = require('sequelize');
+
+//Check Login State
+router.get('/', validateToken, async (req, res) => {
+	return res.status(201).send(
+		authUtil.successTrue(201, '회원상태 조회완료', {
+			nickname: req.user.dataValues.nickname,
+			email: req.user.dataValues.email,
+		})
+	);
+});
 
 //Register
-router.post('/', async (req, res) => {
+router.post('/signup', async (req, res) => {
 	const { userid, password, email, nickname } = req.body;
 
 	if (
@@ -16,7 +32,9 @@ router.post('/', async (req, res) => {
 		userid == 'admin' ||
 		userid == 'ADMIN'
 	) {
-		res.json({ error: 'ADMIN 닉네임&아이디는 사용하실 수 없습니다.' });
+		return res
+			.status(500)
+			.send(authUtil.successFalse(500, 'ADMIN 닉네임&아이디는 사용하실 수 없습니다.'));
 	} else {
 		// 유저아이디 존재여부 확인
 		const user = await Users.findOne({ where: { userid: userid } });
@@ -29,46 +47,53 @@ router.post('/', async (req, res) => {
 					email: email,
 					nickname: nickname,
 				});
-				res.json('회원가입 성공!');
+				return res
+					.status(201)
+					.send(authUtil.successTrue(201, '유저 회원가입에 성공하였습니다.'));
 			});
 		} else {
-			res.json({ error: '이미 존재하는 아이디입니다.' });
+			return res
+				.status(500)
+				.send(authUtil.successFalse(500, '이미 존재하는 아이디입니다.'));
 		}
 	}
 });
 
 //Login
-router.post('/login', async (req, res) => {
-	const { userid, password, nickname } = req.body;
+const secret = process.env.SECRET_KEY;
+router.post('/signin', async (req, res) => {
+	const { userid, password } = req.body;
 
-	const user = await Users.findOne({ where: { userid: userid } });
+	try {
+		const user = await Users.findOne({ where: { userid: userid } });
 
-	if (!user) {
-		return res.json({ error: '존재하지 않는 아이디입니다.' });
-	}
+		if (!user) {
+			return res.status(200).send(authUtil.successTrue(400, '존재하지 않는 아이디입니다.'));
+		}
 
-	bcrypt.compare(password, user.password).then(match => {
-		if (!match)
-			return res.json({
-				error: '비밀번호가 일치하지 않습니다.',
-			});
+		bcrypt.compare(password, user.password).then(async match => {
+			if (!match) {
+				return res
+					.status(200)
+					.send(authUtil.successFalse(400, '비밀번호가 맞지 않습니다.'));
+			}
 
-		// accessToken 발급및 Respond
-		const accessToken = sign(
-			{ userid: user.userid, nickname: user.nickname },
-			'importantsecret'
-		);
-		return res.json({
-			code: 200,
-			token: accessToken,
-			userid: userid,
-			nickname: user.nickname,
+			// accessToken 발급및 Respond
+			const accessToken = generateAccessToken(userid);
+			const refreshToken = generateRefreshToken(userid);
+
+			await Users.update(
+				{ refreshToken: refreshToken },
+				{ where: { userid: userid } }
+			);
+			return res
+				.status(200)
+				.send(authUtil.jwtSent(200, '유저 로그인 성공', accessToken, refreshToken));
 		});
-	});
-});
-
-router.get('/state', validateToken, async (req, res) => {
-	res.json({ state: true });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).send(authUtil.successFalse(500, '로그인 실패'));
+	}
 });
 
 //Update

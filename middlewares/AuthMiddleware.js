@@ -1,20 +1,39 @@
 const { verify } = require('jsonwebtoken');
-const { Post } = require('../models');
+const { Users } = require('../models');
+const authUtil = require('../response/authUtil');
 
-const validateToken = (req, res, next) => {
-    const accessToken = req.header('accessToken');
+const secret = process.env.SECRET_KEY;
+const validateToken = async (req, res, next) => {
+	const accessToken = req.header('accessToken');
 
-    if (!accessToken) return res.json({ error: '로그인 상태가 아닙니다.' });
+	if (!accessToken) {
+		return res
+			.status(400)
+			.send(authUtil.successTrue(400, '엑세스 토큰이 존재하지 않습니다.'));
+	}
 
-    try {
-        const validToken = verify(accessToken, 'importantsecret');
-        req.user = validToken
-        if (validToken) {
-            return next();
-        }
-    } catch (err) {
-        return res.json({ error: err });
-    }
+	try {
+		const decoded = verify(accessToken, secret);
+		const userId = decoded.id;
+		const user = await Users.findOne({
+			where: {
+				userId,
+			},
+		});
+
+		if (!user) {
+			return res.status(401).send(authUtil.successTrue(401, '존재하지 않는 유저입니다.'));
+		} else {
+			req.user = user;
+			return next();
+		}
+	} catch (err) {
+		if (err.name === 'TokenExpiredError') {
+			return res.status(401).json(authUtil.successTrue(403, '토큰이 만료되었습니다.'));
+		}
+
+		return res.status(401).json(authUtil.successTrue(403, '유효하지 않은 토큰입니다.'));
+	}
 };
 
 module.exports = { validateToken };

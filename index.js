@@ -26,10 +26,10 @@ const usersRouter = require('./routes/Users');
 app.use('/auth', usersRouter);
 const postRouter = require('./routes/Post');
 app.use('/post', postRouter);
-const commentRouter = require('./routes/Comment');
-app.use('/comment', commentRouter);
 const ImageUpload = require('./routes/ImgUpload');
 app.use('/img', ImageUpload);
+const Jwt = require('./routes/Jwt');
+app.use('/jwt', Jwt);
 
 //Port
 db.sequelize.sync().then(() => {
