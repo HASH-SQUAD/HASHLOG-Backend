@@ -7,11 +7,12 @@ const authUtil = {
 			data: data,
 		};
 	},
-	successFalse: (status, message) => {
+	successFalse: (status, message, data) => {
 		return {
 			status: status,
 			success: false,
 			message: message,
+			data: data,
 		};
 	},
 	jwtSent: (status, message, accessToken, refreshToken) => {

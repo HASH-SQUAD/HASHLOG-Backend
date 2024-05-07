@@ -11,9 +11,11 @@ const upload = multer({
 		},
 		filename(req, file, cb) {
 			file.originalname = file.originalname
-			.replace(/(.)/g, '')
-			.toString('utf8');
-			const ext = path.extname(file.originalname + Math.random(1, 1000)).toString('utf8');
+				.replace(/(.)/g, '')
+				.toString('utf8');
+			const ext = path
+				.extname(file.originalname + Math.random(1, 1000))
+				.toString('utf8');
 			cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
 		},
 	}),
@@ -21,10 +23,7 @@ const upload = multer({
 });
 
 router.post('/upload', validateToken, upload.single('img'), (req, res) => {
-	//console.log('Requies File :', req.file);
-	//console.log('Response File', req.file.filename);
-
-	const IMG_URL = `http://localhost:3000/uploads/${req.file.filename}`;
+	const IMG_URL = `${process.env.SERVER_ORIGIN}/uploads/${req.file.filename}`;
 	res.json({ url: IMG_URL });
 });
 
