@@ -21,15 +21,9 @@ app.get('/', (req, res) => {
 //DataBase
 const db = require('./models');
 
-//DataBase Router Call
-const usersRouter = require('./routes/Users');
-app.use('/auth', usersRouter);
-const postRouter = require('./routes/Post');
-app.use('/post', postRouter);
-const ImageUpload = require('./routes/ImgUpload');
-app.use('/img', ImageUpload);
-const Jwt = require('./routes/Jwt');
-app.use('/jwt', Jwt);
+//API Router Call
+const ApiRouter = require('./routes/');
+app.use('/', ApiRouter);
 
 //Port
 db.sequelize.sync().then(() => {
