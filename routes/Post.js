@@ -1,91 +1,178 @@
 const express = require('express');
 const router = express.Router();
 const { Post } = require('../models');
-const bcrypt = require('bcrypt');
 const { validateToken } = require('../middlewares/AuthMiddleware');
+const authUtil = require('../response/authUtil');
 
 //Write Post
 router.post('/', validateToken, async (req, res) => {
 	const title = req.body;
 	title.desc = req.body.desc;
-	if (req.body.mainImg) {
-		title.mainImg = req.body.mainImg;
-	} else {
-		title.mainImg = `${SERVER_ORIGIN}/uploads/NoImg.jpg`;
+
+	try {
+		if (req.body.mainImg) {
+			title.mainImg = req.body.mainImg;
+		} else {
+			title.mainImg = `${SERVER_ORIGIN}/uploads/NoImg.jpg`;
+		}
+
+		title.subheading = req.body.subheading;
+		title.userid = req.user.userid;
+
+		await Post.create(req.body);
+
+		return res.status(200).send(authUtil.successTrue(200, '게시글 작성 완료!'));
+	} catch (err) {
+		console.log(err);
+		return res.status(501).send(authUtil.unknownError({ error: err }));
 	}
-
-	title.subheading = req.body.subheading;
-
-	title.nickname = req.user.nickname;
-	title.userid = req.user.userid;
-
-	Post.create(req.body);
-	res.json('게시글 작성 완료');
 });
 
 //Update
 router.put('/:id', validateToken, async (req, res) => {
 	const title = req.body;
 	title.id = req.params.id;
-	title.userid = req.user.userid;
 	title.desc = req.body.desc;
+	title.mainImg = req.body.mainImg;
+	title.subheading = req.body.subheading;
 
-	Post.findOne({ where: { id: req.params.id } }).then(post => {
-		if (post.userid === req.user.userid) {
-			Post.update(req.body, { where: { id: req.params.id } });
-			res.json('글 수정 완료');
-		} else {
-			res.json('글작성자만 글을 수정할 수 있습니다.');
-		}
-	});
+	try {
+		await Post.findOne({ where: { id: req.params.id } }).then(async post => {
+			if (!post) {
+				return res
+					.status(201)
+					.send(authUtil.successFalse(201, '게시글을 찾을 수 없습니다.'));
+			}
+
+			if (
+				req.user.isAdmin ||
+				(req.user.isAdmin && post.userid === req.user.userid)
+			) {
+				await Post.update(req.body, { where: { id: req.params.id } });
+				return res
+					.status(201)
+					.send(authUtil.successTrue(200, 'ADMIN : 게시글 수정 완료'));
+			} else {
+				try {
+					if (post.userid === req.user.userid) {
+						await Post.update(req.body, { where: { id: req.params.id } });
+						return res
+							.status(200)
+							.send(authUtil.successTrue(200, '게시글 수정 완료!'));
+					} else {
+						return res
+							.status(201)
+							.send(authUtil.successFalse(201, '게시글 작성자만 수정할 수 있습니다.'));
+					}
+				} catch (err) {
+					return res.status(501).send(authUtil.unknownError({ error: err }));
+				}
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(501).send(authUtil.unknownError({ end: err }));
+	}
 });
 
 //Delete
 router.delete('/:id', validateToken, async (req, res) => {
-	const id = req.params.id;
-	id.userid = req.user.userid;
+	try {
+		await Post.findOne({ where: { id: req.params.id } }).then(async post => {
+			if (!post) {
+				return res
+					.status(201)
+					.send(authUtil.successFalse(201, '게시글을 찾을 수 없습니다.'));
+			}
 
-	if (req.user.userid == 'admin') {
-		Post.findOne({ where: { id: req.params.id } }).then(post => {
-			Post.destroy({ where: { id: id } });
-			res.json('게시글 삭제 성공 (어드민 권한)');
-		});
-	} else {
-		Post.findOne({ where: { id: req.params.id } })
-			.then(post => {
-				if (id === req.params.id) {
-					if (post.userid === req.user.userid) {
-						Post.destroy({ where: { id: req.params.id } });
-						res.json('게시글 삭제 성공');
-					} else {
-						res.json('글작성자만 글을 삭제할 수 있습니다.');
-					}
+			if (
+				req.user.isAdmin ||
+				(req.user.isAdmin && post.userid === req.user.userid)
+			) {
+				await Post.destroy({ where: { id: req.params.id } });
+				return res
+					.status(200)
+					.send(authUtil.successTrue(200, 'ADMIN : 게시글 삭제 완료!'));
+			} else {
+				if (post.userid === req.user.userid) {
+					await Post.destroy({ where: { id: req.params.id } });
+					return res
+						.status(200)
+						.send(authUtil.successTrue(200, '게시글 삭제 완료!'));
 				} else {
-					res.json('게시글을 찾을 수 없습니다.');
+					return res
+						.status(201)
+						.send(authUtil.successFalse(201, '글 작성자만 삭제할 수 있습니다.'));
 				}
-			})
-			.catch(() => {
-				res.json('게시글을 찾을 수 없습니다.');
-			});
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(501).send(authUtil.unknownError({ end: err }));
 	}
 });
 
+const { Users } = require('../models');
+
 //Get Id
 router.get('/:id', async (req, res) => {
-	Post.findOne({ where: { id: req.params.id } }).then(post => {
-		if (post) {
-			res.json(post);
-		} else {
-			res.json('해당 게시글을 찾을 수 없습니다.');
-		}
-	});
+	try {
+		await Post.findOne({
+			where: { id: req.params.id },
+			attributes: {
+				exclude: ['userid'],
+			},
+			include: [
+				{
+					model: Users,
+					attributes: ['nickname'],
+				},
+			],
+		}).then(post => {
+			if (post) {
+				return res
+					.status(200)
+					.send(authUtil.successTrue(200, '게시글을 찾았습니다.', post));
+			} else {
+				return res
+					.status(404)
+					.send(authUtil.successTrue(404, '게시글을 찾을 수 없습니다.'));
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(501).send(authUtil.unknownError({ error: err }));
+	}
 });
 
 //Get ALL
 router.get('/', async (req, res) => {
-	Post.findAll().then(post => {
-		res.json(post);
-	});
+	try {
+		await Post.findAll({
+			attributes: {
+				exclude: ['userid'],
+			},
+			include: [
+				{
+					model: Users,
+					attributes: ['nickname'],
+				},
+			],
+		}).then(post => {
+			if (post) {
+				return res
+					.status(200)
+					.send(authUtil.successTrue(200, '게시글을 찾았습니다.', post));
+			} else {
+				return res
+					.status(404)
+					.send(authUtil.successTrue(404, '게시글을 찾을 수 없습니다.'));
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(501).send(authUtil.unknownError({ error: err }));
+	}
 });
 
 module.exports = router;

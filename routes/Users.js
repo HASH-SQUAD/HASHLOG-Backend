@@ -29,7 +29,7 @@ router.post('/signup', async (req, res) => {
 	if (nickname === 'ADMIN' || userid === 'ADMIN') {
 		return res
 			.status(500)
-			.send(authUtil.successFalse(500, 'ADMIN 닉네임은 사용하실 수 없습니다.'));
+			.send(authUtil.successFalse(500, 'ADMIN 닉네임&아이디는 사용하실 수 없습니다.'));
 	} else {
 		// 유저아이디 존재여부 확인
 		const user = await Users.findOne({ where: { userid: userid } });
@@ -41,6 +41,7 @@ router.post('/signup', async (req, res) => {
 					password: hash,
 					email: email,
 					nickname: nickname,
+					isAdmin: false,
 				});
 				return res
 					.status(201)
@@ -69,7 +70,7 @@ router.post('/signin', async (req, res) => {
 		bcrypt.compare(password, user.password).then(async match => {
 			if (!match) {
 				return res
-					.status(200)
+					.status(400)
 					.send(authUtil.successFalse(400, '비밀번호가 맞지 않습니다.'));
 			}
 
@@ -81,6 +82,11 @@ router.post('/signin', async (req, res) => {
 				{ refreshToken: refreshToken },
 				{ where: { userid: userid } }
 			);
+			if (user.isAdmin) {
+				return res
+					.status(200)
+					.send(authUtil.jwtSent(200, '어드민 로그인 성공', accessToken, refreshToken));
+			}
 			return res
 				.status(200)
 				.send(authUtil.jwtSent(200, '유저 로그인 성공', accessToken, refreshToken));
@@ -130,11 +136,7 @@ router.put('/update/nickname', validateToken, async (req, res) => {
 			});
 		} catch (err) {
 			console.log(err);
-			return res.status(501).send(
-				authUtil.successFalse(501, '알수 없는 에러가 발생하였습니다. Console을 확인해주세요', {
-					error: err,
-				})
-			);
+			return res.status(501).send(authUtil.unknownError({ error: err }));
 		}
 	}
 });
@@ -173,11 +175,7 @@ router.put('/update/password', validateToken, async (req, res) => {
 		});
 	} catch (err) {
 		console.log(err);
-		return res.status(501).send(
-			authUtil.successFalse(501, '알수 없는 에러가 발생하였습니다. Console을 확인해주세요', {
-				error: err,
-			})
-		);
+		return res.status(501).send(authUtil.unknownError({ error: err }));
 	}
 });
 
@@ -201,9 +199,48 @@ router.delete('/delete', validateToken, async (req, res) => {
 		});
 	} catch (err) {
 		console.log(err);
-		return res
-			.status(501)
-			.send(authUtil.successFalse(501, '알 수 없는 에러가 발생하였습니다.', { error: err }));
+		return res.status(501).send(authUtil.unknownError({ error: err }));
+	}
+});
+
+//ADMIN
+router.post('/admin', async (req, res) => {
+	const { userid, accessCode, givenAccess } = req.body;
+	const ADMIN_ACCESS_CODE = process.env.ADMIN_ACCESS_CODE;
+
+	try {
+		if (accessCode === ADMIN_ACCESS_CODE) {
+			const user = await Users.findOne({ where: { userid: userid } });
+
+			if (!user) {
+				return res
+					.status(200)
+					.send(authUtil.successTrue(400, '존재하지 않는 아이디입니다.'));
+			}
+
+			try {
+				await Users.update(
+					{ isAdmin: givenAccess },
+					{ where: { userid: userid } }
+				);
+				return res
+					.status(200)
+					.send(authUtil.successTrue(400, '성공적으로 변경되었습니다.'));
+					
+			} catch (error) {
+				return res
+					.status(501)
+					.send(
+						authUtil.successFalse(501, '변경도중 오류가 발생하였습니다.', { error: err })
+					);
+			}
+		} else {
+			return res
+				.status(501)
+				.send(authUtil.successFalse(501, '액세스 코드가 맞지 않습니다.'));
+		}
+	} catch (err) {
+		return res.status(501).send(authUtil.unknownError({ error: err }));
 	}
 });
 
