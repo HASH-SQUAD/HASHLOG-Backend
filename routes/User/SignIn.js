@@ -4,7 +4,7 @@ const { Users } = require('../../models');
 const {
 	generateAccessToken,
 	generateRefreshToken,
-} = require('../Jwt.js');
+} = require('../../tokens/jwt.js');
 
 const SignIn = async (req, res) => {
 	const { userid, password } = req.body;

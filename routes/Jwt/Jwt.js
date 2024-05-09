@@ -1,12 +1,10 @@
-const express = require('express');
-const router = express.Router();
-const { Users } = require('../models');
 const { verify } = require('jsonwebtoken');
-const { generateAccessToken } = require('../tokens/jwt.js');
-const authUtil = require('../response/authUtil');
+const { Users } = require('../../models');
+const { generateAccessToken } = require('../../tokens/jwt.js');
+const authUtil = require('../../response/authUtil.js');
 
 const secret = process.env.SECRET_KEY;
-router.post('/', async (req, res) => {
+const Jwt = async (req, res) => {
 	const { accessToken, refreshToken } = req.body;
 
 	try {
@@ -38,6 +36,6 @@ router.post('/', async (req, res) => {
 			.status(501)
 			.send(authUtil.successFalse(200, '디코딩 중 문제발생 Console 확인바람'));
 	}
-});
+}
 
-module.exports = router;
+module.exports = Jwt;

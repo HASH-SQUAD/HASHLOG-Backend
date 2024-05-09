@@ -1,8 +1,8 @@
 const express = require('express');
 const multer = require('multer');
-const router = require('./Users');
-const { validateToken } = require('../middlewares/AuthMiddleware');
 const path = require('path');
+const router = require('../User');
+const { validateToken } = require('../../middlewares/AuthMiddleware.js');
 
 const upload = multer({
 	storage: multer.diskStorage({
@@ -16,15 +16,13 @@ const upload = multer({
 			const ext = path
 				.extname(file.originalname + Math.random(1, 1000))
 				.toString('utf8');
-			cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+			cb(null, path.basename(file.originalname, ext) + Date.now() + ext + '.jpg');
 		},
 	}),
 	// limits: { fileSize: 5 * 1024 * 1024 } // 파일 크기 제한
 });
 
-router.post('/upload', validateToken, upload.single('img'), (req, res) => {
-	const IMG_URL = `${process.env.SERVER_ORIGIN}/uploads/${req.file.filename}`;
-	res.json({ url: IMG_URL });
-});
+const Image = require('./Image');
+router.post('/image', validateToken, upload.single('img'), Image);
 
 module.exports = router;
