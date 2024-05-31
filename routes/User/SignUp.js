@@ -1,5 +1,6 @@
 const authUtil = require('../../response/authUtil');
 const { Users } = require('../../models');
+const bcrypt = require('bcrypt');
 
 const SignUp = async (req, res) => {
 	const { userid, password, email, nickname } = req.body;
@@ -31,6 +32,6 @@ const SignUp = async (req, res) => {
 				.send(authUtil.successFalse(500, '이미 존재하는 아이디입니다.'));
 		}
 	}
-}
+};
 
 module.exports = SignUp;

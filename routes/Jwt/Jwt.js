@@ -22,7 +22,7 @@ const Jwt = async (req, res) => {
 				.send(
 					authUtil.jwtSent(
 						200,
-						'Refresh 토큰을 재발급 했습니다.',
+						'accessToken을 재발급 했습니다.',
 						accessToken,
 						refreshToken
 					)

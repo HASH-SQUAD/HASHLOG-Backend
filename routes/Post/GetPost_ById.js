@@ -1,4 +1,4 @@
-const { Post } = require('../../models');
+const { Post, Users } = require('../../models');
 const authUtil = require('../../response/authUtil.js');
 
 const GetPost_ById = async (req, res) => {

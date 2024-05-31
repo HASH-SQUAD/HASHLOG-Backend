@@ -1,3 +1,7 @@
+const { Post } = require('../../models');
+const { Users } = require('../../models');
+const authUtil = require('../../response/authUtil.js');
+
 const GetPost_All = async (req, res) => {
 	try {
 		await Post.findAll({

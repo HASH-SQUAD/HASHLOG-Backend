@@ -13,7 +13,7 @@ const DeletePost = require('./DeletePost.js');
 router.delete('/:id', validateToken, DeletePost);
 
 const GetPost_ById = require('./GetPost_ById.js');
-router.get('/:id', GetPost_ById);
+router.get(`/:id`, GetPost_ById);
 
 const GetPost_All = require('./GetPost_All.js');
 router.get('/', GetPost_All);
