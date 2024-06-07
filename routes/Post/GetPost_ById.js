@@ -13,6 +13,10 @@ const GetPost_ById = async (req, res) => {
 					model: Users,
 					attributes: ['nickname'],
 				},
+				{
+					model: Users,
+					attributes: ['profileImg'],
+				},
 			],
 		}).then(post => {
 			if (post) {

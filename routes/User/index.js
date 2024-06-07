@@ -18,6 +18,12 @@ router.put('/update/nickname', validateToken, UpdateNickname);
 const UpdatePassword = require('./UpdatePassword.js');
 router.put('/update/password', validateToken, UpdatePassword);
 
+const UpdateProfileImg = require('./UpdateProfileImg.js');
+router.put('/update/profileimg', validateToken, UpdateProfileImg);
+
+const DeleteProfileImg = require('./DeleteProfileImg.js');
+router.put('/delete/profileimg', validateToken, DeleteProfileImg);
+
 const DeleteAccount = require('./DeleteAccount.js');
 router.delete('/delete', validateToken, DeleteAccount);
 

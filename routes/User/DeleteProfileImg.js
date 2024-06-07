@@ -2,12 +2,7 @@ const bcrypt = require('bcrypt');
 const authUtil = require('../../response/authUtil');
 const { Users } = require('../../models');
 
-const UpdateProfileImg = async (req, res) => {
-	const { profileImg } = req.body;
-	if (!profileImg) {
-		return res.status(401).send(authUtil.successFalse(401, '데이터가 없습니다.'));
-	}
-
+const DeleteProfileImg = async (req, res) => {
 	try {
 		const user = await Users.findOne({
 			where: { userid: req.user.dataValues.userid },
@@ -17,10 +12,10 @@ const UpdateProfileImg = async (req, res) => {
 			return res.status(401).send(authUtil.successFalse(401, '유저를 찾을 수 없습니다.'));
 		} else {
 			Users.update(
-				{ profileImg: profileImg },
+				{ profileImg: `${process.env.SERVER_ORIGIN}/uploads/NoUserImg.png` },
 				{ where: { userid: req.user.dataValues.userid } }
 			);
-			return res.status(200).send(authUtil.successTrue(200, '성공적으로 수정되었습니다.'));
+			return res.status(200).send(authUtil.successTrue(200, '성공적으로 삭제되었습니다.'));
 		}
 	} catch (err) {
 		console.log(err);
@@ -28,4 +23,4 @@ const UpdateProfileImg = async (req, res) => {
 	}
 };
 
-module.exports = UpdateProfileImg;
+module.exports = DeleteProfileImg;
