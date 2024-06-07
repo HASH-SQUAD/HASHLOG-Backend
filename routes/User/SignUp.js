@@ -21,6 +21,7 @@ const SignUp = async (req, res) => {
 					email: email,
 					nickname: nickname,
 					isAdmin: false,
+					profileImg: 'http://localhost:3000/uploads/NoUserImg.png',
 				});
 				return res
 					.status(201)

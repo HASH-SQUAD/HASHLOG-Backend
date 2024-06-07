@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				allowNull: false,
 			},
+			profileImg: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
 			nickname: {
 				type: DataTypes.STRING,
 				allowNull: false,
@@ -24,8 +28,8 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 			},
 			isAdmin: {
-				type: DataTypes.BOOLEAN
-			}
+				type: DataTypes.BOOLEAN,
+			},
 		},
 		{
 			paranoid: true,
