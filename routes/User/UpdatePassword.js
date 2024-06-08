@@ -14,7 +14,7 @@ const UpdatePassword = async (req, res) => {
 			if (!match) {
 				return res
 					.status(200)
-					.send(authUtil.successFalse(400, '비밀번호가 맞지 않습니다.'));
+					.send(authUtil.successFalse(400, '비밀번호가 일치하지 않습니다.'));
 			} else {
 				try {
 					bcrypt.hash(newPassword, 10).then(hash => {

@@ -19,7 +19,7 @@ const UpdateNickname = async (req, res) => {
 			bcrypt.compare(password, user.password).then(async match => {
 				if (!match) {
 					return res
-						.status(200)
+						.status(400)
 						.send(authUtil.successFalse(400, '비밀번호가 맞지 않습니다.'));
 				}
 				try {
