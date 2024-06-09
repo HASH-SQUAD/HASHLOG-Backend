@@ -11,30 +11,15 @@ const SignUp = async (req, res) => {
 			.send(authUtil.successFalse(500, 'ADMIN 닉네임&아이디는 사용하실 수 없습니다.'));
 	} else {
 		try {
-			const user = await Users.findOne({
-				where: { userid: userid },
-				paranoid: false,
+			const user = await Users.findOne({ 
+				where: { userid: userid }, 
+				paranoid: false 
 			});
 
 			if (user) {
-				if (user.deletedAt) {
-					await user.restore();
-					const hash = await bcrypt.hash(password, 10);
-					await user.update({
-						password: hash,
-						email: email,
-						nickname: nickname,
-						isAdmin: false,
-						profileImg: 'http://localhost:3000/uploads/NoUserImg.png',
-					});
-					return res
-						.status(201)
-						.send(authUtil.successTrue(201, '유저 회원가입에 성공하였습니다.'));
-				} else {
-					return res
-						.status(500)
-						.send(authUtil.successFalse(500, '이미 존재하는 아이디입니다.'));
-				}
+				return res
+					.status(500)
+					.send(authUtil.successFalse(500, '이미 존재하는 아이디입니다.'));
 			} else {
 				const hash = await bcrypt.hash(password, 10);
 				await Users.create({
@@ -43,7 +28,7 @@ const SignUp = async (req, res) => {
 					email: email,
 					nickname: nickname,
 					isAdmin: false,
-					profileImg: `${process.env.SERVER_ORIGIN}/uploads/NoUserImg.png`,
+					profileImg: 'http://localhost:3000/uploads/NoUserImg.png',
 				});
 				return res
 					.status(201)
@@ -51,7 +36,9 @@ const SignUp = async (req, res) => {
 			}
 		} catch (error) {
 			console.error(error);
-			return res.status(500).send(authUtil.unknownError({ error: error }));
+			return res
+				.status(500)
+				.send(authUtil.unknownError({ error: error }));
 		}
 	}
 };
