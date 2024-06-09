@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
 		'Post',
 		{
 			title: {
-				type: DataTypes.STRING,
+				type: DataTypes.TEXT,
 				allowNull: false,
 			},
 			desc: {
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
 				allowNull: false,
 			},
 			subheading: {
-				type: DataTypes.STRING,
+				type: DataTypes.TEXT,
 				allowNull: false,
 			},
 		},
