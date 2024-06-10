@@ -14,6 +14,7 @@ const GetPost_All = async (req, res) => {
 					attributes: ['nickname'],
 				},
 			],
+			order: [['createdAt', 'desc']],
 		}).then(post => {
 			if (post) {
 				return res
