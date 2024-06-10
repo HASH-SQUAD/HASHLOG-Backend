@@ -9,7 +9,7 @@ const WritePost = async (req, res) => {
 		if (req.body.mainImg) {
 			title.mainImg = req.body.mainImg;
 		} else {
-			title.mainImg = `${SERVER_ORIGIN}/uploads/NoImg.jpg`;
+			title.mainImg = `${SERVER_ORIGIN}/common/NoImg.jpg`;
 		}
 
 		title.subheading = req.body.subheading;

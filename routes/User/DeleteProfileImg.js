@@ -12,7 +12,7 @@ const DeleteProfileImg = async (req, res) => {
 			return res.status(401).send(authUtil.successFalse(401, '유저를 찾을 수 없습니다.'));
 		} else {
 			Users.update(
-				{ profileImg: `${process.env.SERVER_ORIGIN}/uploads/NoUserImg.png` },
+				{ profileImg: `${process.env.SERVER_ORIGIN}/common/NoUserImg.png` },
 				{ where: { userid: req.user.dataValues.userid } }
 			);
 			return res.status(200).send(authUtil.successTrue(200, '성공적으로 삭제되었습니다.'));

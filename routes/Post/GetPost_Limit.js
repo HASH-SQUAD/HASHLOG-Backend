@@ -1,7 +1,14 @@
 const { Post, Users } = require('../../models');
 const authUtil = require('../../response/authUtil.js');
 
-const GetPost_All = async (req, res) => {
+const GetPost_Limit = async (req, res) => {
+	const pageNum = req.param('page');
+
+	let offset = 0;
+	if (pageNum > 1) {
+		offset = 20 * (pageNum - 1);
+	}
+
 	try {
 		await Post.findAll({
 			attributes: {
@@ -14,8 +21,9 @@ const GetPost_All = async (req, res) => {
 				},
 			],
 			order: [['createdAt', 'desc']],
+			offset: offset,
+			limit: 20,
 		}).then(post => {
-			console.log(post);
 			if (post) {
 				return res
 					.status(200)
@@ -32,4 +40,4 @@ const GetPost_All = async (req, res) => {
 	}
 };
 
-module.exports = GetPost_All;
+module.exports = GetPost_Limit;

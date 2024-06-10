@@ -15,7 +15,10 @@ router.delete('/:id', validateToken, DeletePost);
 const GetPost_ById = require('./GetPost_ById.js');
 router.get(`/:id`, GetPost_ById);
 
-const GetPost_All = require('./GetPost_All.js');
-router.get('/', GetPost_All);
+// const GetPost_All = require('./GetPost_All.js');
+// router.get('/', GetPost_All);
+
+const GetPost_Limit = require('./GetPost_Limit.js');
+router.get('/', GetPost_Limit);
 
 module.exports = router;
