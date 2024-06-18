@@ -22,7 +22,7 @@ const validateToken = async (req, res, next) => {
 		});
 
 		if (!user) {
-			return res.status(204).send(authUtil.successFalse(204, '존재하지 않는 유저입니다.'));
+			return res.status(200).send(authUtil.successFalse(200, '존재하지 않는 유저입니다.'));
 		} else {
 			req.user = user;
 			return next();

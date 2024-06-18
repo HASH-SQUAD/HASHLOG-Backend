@@ -8,8 +8,8 @@ const UpdateNickname = async (req, res) => {
 
 	if (nickname === 'ADMIN') {
 		return res
-			.status(204)
-			.send(authUtil.successFalse(204, 'ADMIN 닉네임은 사용하실 수 없습니다.'));
+			.status(200)
+			.send(authUtil.successFalse(200, 'ADMIN 닉네임은 사용하실 수 없습니다.'));
 	} else {
 		try {
 			const user = await Users.findOne({
@@ -19,8 +19,8 @@ const UpdateNickname = async (req, res) => {
 			bcrypt.compare(password, user.password).then(async match => {
 				if (!match) {
 					return res
-						.status(204)
-						.send(authUtil.successFalse(204, '비밀번호가 맞지 않습니다.'));
+						.status(200)
+						.send(authUtil.successFalse(200, '비밀번호가 맞지 않습니다.'));
 				}
 				try {
 					await Users.update(
@@ -28,8 +28,8 @@ const UpdateNickname = async (req, res) => {
 						{ where: { userid: req.user.dataValues.userid } }
 					);
 					return res
-						.status(201)
-						.send(authUtil.successTrue(201, '닉네임 수정이 완료되었습니다.'));
+						.status(200)
+						.send(authUtil.successTrue(200, '닉네임 수정이 완료되었습니다.'));
 				} catch (err) {
 					return res
 						.status(500)

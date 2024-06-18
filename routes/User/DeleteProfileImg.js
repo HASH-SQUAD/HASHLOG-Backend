@@ -9,7 +9,7 @@ const DeleteProfileImg = async (req, res) => {
 		});
 
 		if (!user) {
-			return res.status(204).send(authUtil.successFalse(204, '유저를 찾을 수 없습니다.'));
+			return res.status(200).send(authUtil.successFalse(200, '유저를 찾을 수 없습니다.'));
 		} else {
 			Users.update(
 				{ profileImg: `${process.env.SERVER_ORIGIN}/common/NoUserImg.png` },

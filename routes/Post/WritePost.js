@@ -17,7 +17,7 @@ const WritePost = async (req, res) => {
 
 		await Post.create(req.body);
 
-		return res.status(201).send(authUtil.successTrue(201, '게시글 작성 완료!'));
+		return res.status(200).send(authUtil.successTrue(200, '게시글 작성 완료!'));
 	} catch (err) {
 		console.log(err);
 		return res.status(500).send(authUtil.unknownError({ error: err }));

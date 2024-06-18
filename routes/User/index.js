@@ -7,7 +7,7 @@ const LoginState = require('./LoginState.js');
 router.get('/', validateToken, LoginState);
 
 const GetUserList = require('./GetUserList.js');
-router.get('/', validateToken, GetUserList);
+router.get('/adminLNRnUy7s5T', validateToken, GetUserList);
 
 const SignUp = require('./SignUp.js');
 router.post('/signup', SignUp);

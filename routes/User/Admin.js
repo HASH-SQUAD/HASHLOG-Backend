@@ -11,8 +11,8 @@ const Admin = async (req, res) => {
 
 			if (!user) {
 				return res
-					.status(204)
-					.send(authUtil.successTrue(204, '존재하지 않는 아이디입니다.'));
+					.status(200)
+					.send(authUtil.successTrue(200, '존재하지 않는 아이디입니다.'));
 			}
 
 			try {

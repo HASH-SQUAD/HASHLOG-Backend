@@ -13,8 +13,8 @@ const UpdatePassword = async (req, res) => {
 		bcrypt.compare(password, user.password).then(async match => {
 			if (!match) {
 				return res
-					.status(204)
-					.send(authUtil.successFalse(204, '비밀번호가 일치하지 않습니다.'));
+					.status(200)
+					.send(authUtil.successFalse(200, '비밀번호가 일치하지 않습니다.'));
 			} else {
 				try {
 					bcrypt.hash(newPassword, 10).then(hash => {
@@ -24,8 +24,8 @@ const UpdatePassword = async (req, res) => {
 						);
 					});
 					return res
-						.status(201)
-						.send(authUtil.successTrue(201, '비밀번호 수정이 완료되었습니다.'));
+						.status(200)
+						.send(authUtil.successTrue(200, '비밀번호 수정이 완료되었습니다.'));
 				} catch (err) {
 					return res
 						.status(500)
