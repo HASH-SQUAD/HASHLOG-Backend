@@ -25,13 +25,13 @@ const GetPost_ById = async (req, res) => {
 					.send(authUtil.successTrue(200, '게시글을 찾았습니다.', post));
 			} else {
 				return res
-					.status(404)
-					.send(authUtil.successTrue(404, '게시글을 찾을 수 없습니다.'));
+					.status(204)
+					.send(authUtil.successTrue(204, '게시글을 찾을 수 없습니다.'));
 			}
 		});
 	} catch (err) {
 		console.log(err);
-		return res.status(501).send(authUtil.unknownError({ error: err }));
+		return res.status(500).send(authUtil.unknownError({ error: err }));
 	}
 };
 
