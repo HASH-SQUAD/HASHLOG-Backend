@@ -13,14 +13,14 @@ const SignIn = async (req, res) => {
 		const user = await Users.findOne({ where: { userid: userid } });
 
 		if (!user) {
-			return res.status(400).send(authUtil.successTrue(400, '존재하지 않는 아이디입니다.'));
+			return res.status(204).send(authUtil.successTrue(204, '존재하지 않는 아이디입니다.'));
 		}
 
 		bcrypt.compare(password, user.password).then(async match => {
 			if (!match) {
 				return res
-					.status(400)
-					.send(authUtil.successFalse(400, '비밀번호가 일치하지 않습니다.'));
+					.status(204)
+					.send(authUtil.successFalse(204, '비밀번호가 일치하지 않습니다.'));
 			}
 
 			// accessToken 발급및 Respond
@@ -31,7 +31,7 @@ const SignIn = async (req, res) => {
 				{ refreshToken: refreshToken },
 				{ where: { userid: userid } }
 			);
-			
+
 			if (user.isAdmin) {
 				return res
 					.status(200)
@@ -43,9 +43,7 @@ const SignIn = async (req, res) => {
 		});
 	} catch (err) {
 		console.error(err);
-		return res
-			.status(500)
-			.send(authUtil.successFalse(500, '로그인 실패', { error: err }));
+		return res.status(500).send(authUtil.unknownError({ error: err }));
 	}
 };
 

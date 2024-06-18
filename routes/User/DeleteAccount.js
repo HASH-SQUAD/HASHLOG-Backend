@@ -10,7 +10,7 @@ const DeleteAccount = async (req, res) => {
 			where: { userid: req.user.dataValues.userid },
 		});
 		if (!user) {
-			return res.status(401).send(authUtil.successFalse(401, '계정을 찾을 수 없습니다.'));
+			return res.status(204).send(authUtil.successFalse(204, '계정을 찾을 수 없습니다.'));
 		} else {
 			bcrypt.compare(password, user.password).then(match => {
 				if (match) {
@@ -18,14 +18,14 @@ const DeleteAccount = async (req, res) => {
 					return res.status(200).send(authUtil.successTrue(200, '계정 삭제성공'));
 				} else {
 					return res
-						.status(501)
-						.send(authUtil.successFalse(501, '비밀번호가 일치하지 않습니다.'));
+						.status(204)
+						.send(authUtil.successFalse(204, '비밀번호가 일치하지 않습니다.'));
 				}
 			});
 		}
 	} catch (err) {
 		console.log(err);
-		return res.status(501).send(authUtil.unknownError({ error: err }));
+		return res.status(500).send(authUtil.unknownError({ error: err }));
 	}
 };
 

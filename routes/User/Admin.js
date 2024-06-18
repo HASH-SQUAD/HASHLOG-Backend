@@ -11,8 +11,8 @@ const Admin = async (req, res) => {
 
 			if (!user) {
 				return res
-					.status(200)
-					.send(authUtil.successTrue(400, '존재하지 않는 아이디입니다.'));
+					.status(204)
+					.send(authUtil.successTrue(204, '존재하지 않는 아이디입니다.'));
 			}
 
 			try {
@@ -22,21 +22,21 @@ const Admin = async (req, res) => {
 				);
 				return res
 					.status(200)
-					.send(authUtil.successTrue(400, '성공적으로 변경되었습니다.'));
+					.send(authUtil.successTrue(200, '성공적으로 변경되었습니다.'));
 			} catch (error) {
 				return res
-					.status(501)
+					.status(500)
 					.send(
-						authUtil.successFalse(501, '변경도중 오류가 발생하였습니다.', { error: err })
+						authUtil.successFalse(500, '변경도중 오류가 발생하였습니다.', { error: err })
 					);
 			}
 		} else {
 			return res
-				.status(501)
-				.send(authUtil.successFalse(501, '액세스 코드가 맞지 않습니다.'));
+				.status(403)
+				.send(authUtil.successFalse(403, '액세스 코드가 맞지 않습니다.'));
 		}
 	} catch (err) {
-		return res.status(501).send(authUtil.unknownError({ error: err }));
+		return res.status(500).send(authUtil.unknownError({ error: err }));
 	}
 };
 
