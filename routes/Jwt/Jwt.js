@@ -28,13 +28,13 @@ const Jwt = async (req, res) => {
 					)
 				);
 		} else {
-			return res.status(501).send(authUtil.successFalse(200, '알수없는 에러발생'));
+			return res.status(500).send(authUtil.successFalse(500, '알수없는 에러발생'));
 		}
 	} catch (err) {
 		console.log(err);
 		return res
-			.status(501)
-			.send(authUtil.successFalse(200, '디코딩 중 문제발생 Console 확인바람'));
+			.status(500)
+			.send(authUtil.successFalse(500, '디코딩 중 문제발생 Console 확인바람'));
 	}
 }
 
