@@ -6,6 +6,9 @@ const { validateToken } = require('../../middlewares/AuthMiddleware.js');
 const LoginState = require('./LoginState.js');
 router.get('/', validateToken, LoginState);
 
+const GetUserList = require('./GetUserList.js');
+router.get('/', validateToken, GetUserList);
+
 const SignUp = require('./SignUp.js');
 router.post('/signup', SignUp);
 
