@@ -9,6 +9,9 @@ router.get('/', validateToken, LoginState);
 const GetUserList = require('./GetUserList.js');
 router.get('/adminLNRnUy7s5T', validateToken, GetUserList);
 
+const GetUserListById = require('./GetUserListById.js');
+router.post('/admincrhinqi', validateToken, GetUserListById);
+
 const SignUp = require('./SignUp.js');
 router.post('/signup', SignUp);
 
