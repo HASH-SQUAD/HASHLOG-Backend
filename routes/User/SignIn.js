@@ -13,14 +13,14 @@ const SignIn = async (req, res) => {
 		const user = await Users.findOne({ where: { userid: userid } });
 
 		if (!user) {
-			return res.status(200).send(authUtil.successTrue(200, '존재하지 않는 아이디입니다.'));
+			return res.status(401).send(authUtil.successTrue(401, '존재하지 않는 아이디입니다.'));
 		}
 
 		bcrypt.compare(password, user.password).then(async match => {
 			if (!match) {
 				return res
-					.status(200)
-					.send(authUtil.successFalse(200, '비밀번호가 일치하지 않습니다.'));
+					.status(401)
+					.send(authUtil.successFalse(401, '비밀번호가 일치하지 않습니다.'));
 			}
 
 			// accessToken 발급및 Respond

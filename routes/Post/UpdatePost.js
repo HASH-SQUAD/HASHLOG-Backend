@@ -12,8 +12,8 @@ const UpdatePost = async (req, res) => {
 		await Post.findOne({ where: { id: req.params.id } }).then(async post => {
 			if (!post) {
 				return res
-					.status(200)
-					.send(authUtil.successFalse(200, '게시글을 찾을 수 없습니다.'));
+					.status(401)
+					.send(authUtil.successFalse(401, '게시글을 찾을 수 없습니다.'));
 			}
 
 			if (
@@ -33,8 +33,8 @@ const UpdatePost = async (req, res) => {
 							.send(authUtil.successTrue(200, '게시글 수정 완료!'));
 					} else {
 						return res
-							.status(200)
-							.send(authUtil.successFalse(200, '게시글 작성자만 수정할 수 있습니다.'));
+							.status(401)
+							.send(authUtil.successFalse(401, '게시글 작성자만 수정할 수 있습니다.'));
 					}
 				} catch (err) {
 					return res.status(500).send(authUtil.unknownError({ error: err }));

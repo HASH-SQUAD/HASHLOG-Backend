@@ -9,7 +9,7 @@ const GetUserList = async (req, res) => {
 	}
 
 	if (!req.user.dataValues.isAdmin) {
-		return res.status(200).send(authUtil.successFalse(200, '어드민만 조회가능합니다.'));
+		return res.status(401).send(authUtil.successFalse(401, '어드민만 조회가능합니다.'));
 	}
 	try {
 		await Users.findAll({
@@ -20,8 +20,8 @@ const GetUserList = async (req, res) => {
 				res.status(200).send(authUtil.successTrue(200, '유저를 찾았습니다.', data));
 			} else {
 				res
-					.status(200)
-					.send(authUtil.successFalse(200, '유저가 존재하지 않습니다.', data));
+					.status(401)
+					.send(authUtil.successFalse(401, '유저가 존재하지 않습니다.', data));
 			}
 		});
 	} catch (err) {

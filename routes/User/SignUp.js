@@ -7,8 +7,8 @@ const SignUp = async (req, res) => {
 
 	if (nickname === 'ADMIN' || userid === 'ADMIN') {
 		return res
-			.status(200)
-			.send(authUtil.successFalse(200, 'ADMIN 닉네임&아이디는 사용하실 수 없습니다.'));
+			.status(401)
+			.send(authUtil.successFalse(401, 'ADMIN 닉네임&아이디는 사용하실 수 없습니다.'));
 	} else {
 		try {
 			const user = await Users.findOne({ 
@@ -18,8 +18,8 @@ const SignUp = async (req, res) => {
 
 			if (user) {
 				return res
-					.status(200)
-					.send(authUtil.successFalse(200, '이미 존재하는 아이디입니다.'));
+					.status(401)
+					.send(authUtil.successFalse(401, '이미 존재하는 아이디입니다.'));
 			} else {
 				const hash = await bcrypt.hash(password, 10);
 				await Users.create({

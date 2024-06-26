@@ -8,8 +8,8 @@ const UpdateNickname = async (req, res) => {
 
 	if (nickname === 'ADMIN') {
 		return res
-			.status(200)
-			.send(authUtil.successFalse(200, 'ADMIN 닉네임은 사용하실 수 없습니다.'));
+			.status(401)
+			.send(authUtil.successFalse(401, 'ADMIN 닉네임은 사용하실 수 없습니다.'));
 	} else {
 		try {
 			const user = await Users.findOne({
@@ -19,8 +19,8 @@ const UpdateNickname = async (req, res) => {
 			bcrypt.compare(password, user.password).then(async match => {
 				if (!match) {
 					return res
-						.status(200)
-						.send(authUtil.successFalse(200, '비밀번호가 맞지 않습니다.'));
+						.status(401)
+						.send(authUtil.successFalse(401, '비밀번호가 맞지 않습니다.'));
 				}
 				try {
 					await Users.update(
