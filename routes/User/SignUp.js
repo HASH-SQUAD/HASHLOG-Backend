@@ -11,9 +11,9 @@ const SignUp = async (req, res) => {
 			.send(authUtil.successFalse(401, 'ADMIN 닉네임&아이디는 사용하실 수 없습니다.'));
 	} else {
 		try {
-			const user = await Users.findOne({ 
-				where: { userid: userid }, 
-				paranoid: false 
+			const user = await Users.findOne({
+				where: { userid: userid },
+				paranoid: false,
 			});
 
 			if (user) {
@@ -28,7 +28,7 @@ const SignUp = async (req, res) => {
 					email: email,
 					nickname: nickname,
 					isAdmin: false,
-					profileImg: 'http://localhost:3000/uploads/NoUserImg.png',
+					profileImg: `${process.env.SERVER_ORIGIN}/common/NoUserImg.png`,
 				});
 				return res
 					.status(200)
@@ -36,9 +36,7 @@ const SignUp = async (req, res) => {
 			}
 		} catch (error) {
 			console.error(error);
-			return res
-				.status(500)
-				.send(authUtil.unknownError({ error: error }));
+			return res.status(500).send(authUtil.unknownError({ error: error }));
 		}
 	}
 };

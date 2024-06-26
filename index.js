@@ -6,26 +6,30 @@ const path = require('path');
 dotenv.config();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+	cors({
+		origin: `${process.env.CLIENT_ORIGIN}`,
+	})
+);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname + '/public')));
 
-//Port Setting
+// Port Setting
 const PORT = process.env.PORT;
 
-//API Test
+// API Test
 app.get('/', (req, res) => {
 	res.send('API Running');
 });
 
-//DataBase
+// DataBase
 const db = require('./models');
 
-//API Router Call
+// API Router Call
 const ApiRouter = require('./routes/');
 app.use('/', ApiRouter);
 
-//Port
+// Port
 db.sequelize.sync().then(() => {
 	app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 });
