@@ -6,11 +6,11 @@ const path = require('path');
 dotenv.config();
 
 app.use(express.json());
-app.use(
-	cors({
-		origin: `${process.env.CLIENT_ORIGIN}`,
-	})
-);
+const corsOptions = {
+	origin: process.env.CLIENT_ORIGIN,
+	optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname + '/public')));
 
